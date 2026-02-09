@@ -51,7 +51,7 @@ async def restart_sessions(_, message):
 
 async def send_incomplete_task_message(cid, msg_id, msg):
     try:
-        if msg.startswith("⌬ <b><i>Restarted Successfully!</i></b>"):
+        if msg.startswith("<b><i>Restarted Successfully!</i></b>"):
             await TgClient.bot.edit_message_text(
                 chat_id=cid,
                 message_id=msg_id,
@@ -82,11 +82,11 @@ async def restart_notification():
     if Config.INCOMPLETE_TASK_NOTIFIER and Config.DATABASE_URL:
         if notifier_dict := await database.get_incomplete_tasks():
             for cid, data in notifier_dict.items():
-                msg = f"""⌬ <b><i>{"Restarted Successfully!" if cid == chat_id else "Bot Restarted!"}</i></b>
-┟ <b>Date:</b> {now.strftime("%d/%m/%y")}
-┠ <b>Time:</b> {now.strftime("%I:%M:%S %p")}
-┠ <b>TimeZone:</b> Asia/Kolkata
-┖ <b>Version:</b> {get_version()}"""
+                msg = f"""<b><i>{"Restarted Successfully!" if cid == chat_id else "Bot Restarted!"}</i></b>
+<b>Date:</b> {now.strftime("%d/%m/%y")}
+<b>Time:</b> {now.strftime("%I:%M:%S %p")}
+<b>TimeZone:</b> Asia/Kolkata
+<b>Version:</b> {get_version()}"""
                 for tag, links in data.items():
                     msg += f"\n\n{tag}: "
                     for index, link in enumerate(links, start=1):
@@ -102,11 +102,11 @@ async def restart_notification():
             await TgClient.bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=msg_id,
-                text=f"""⌬ <b><i>Restarted Successfully!</i></b>
-┟ <b>Date:</b> {now.strftime("%d/%m/%y")}
-┠ <b>Time:</b> {now.strftime("%I:%M:%S %p")}
-┠ <b>TimeZone:</b> Asia/Kolkata
-┖ <b>Version:</b> {get_version()}""",
+                text=f"""<b><i>Restarted Successfully!</i></b>
+<b>Date:</b> {now.strftime("%d/%m/%y")}
+<b>Time:</b> {now.strftime("%I:%M:%S %p")}
+<b>TimeZone:</b> Asia/Kolkata
+<b>Version:</b> {get_version()}""",
             )
         except Exception as e:
             LOGGER.error(e)
