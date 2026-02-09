@@ -112,7 +112,6 @@ async def create_telegraph_page(query, items):
             f"{idx}. {title}<br>"
             f"<b><a href='{download_url}'>Download URL</a> | <a href='http://t.me/share/url?url={download_url}'>Share Download URL</a></b><br>"
             f"<b>Size:</b> {size}<br>"
-            f"━━━━━━━━━━━━━━━━━━━━━━<br><br>"
         )
 
     response = await telegraph.create_page(
