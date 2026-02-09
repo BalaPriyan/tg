@@ -6,7 +6,7 @@ install()
 
 from subprocess import run as srun
 from os import getcwd
-from asyncio import Lock, new_event_loop, set_event_loop
+from asyncio import Lock, Semaphore, new_event_loop, set_event_loop
 from logging import (
     ERROR,
     INFO,
@@ -47,7 +47,7 @@ basicConfig(
 )
 
 LOGGER = getLogger(__name__)
-cpu_no = cpu_count()
+cpu_no = cpu_count() or 1
 threads = max(1, cpu_no // 2)
 cores = ",".join(str(i) for i in range(threads))
 
@@ -58,6 +58,7 @@ qb_torrents = {}
 jd_downloads = {}
 nzb_jobs = {}
 user_data = {}
+user_data_cache = None
 aria2_options = {}
 qbit_options = {}
 nzb_options = {}
@@ -92,7 +93,7 @@ queue_dict_lock = Lock()
 qb_listener_lock = Lock()
 nzb_listener_lock = Lock()
 jd_listener_lock = Lock()
-cpu_eater_lock = Lock()
+cpu_eater_lock = Semaphore(max(1, threads))
 same_directory_lock = Lock()
 
 sabnzbd_client = SabnzbdClient(

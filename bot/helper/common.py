@@ -49,6 +49,7 @@ from .ext_utils.media_utils import (
     take_ss,
 )
 from .ext_utils.metadata_utils import MetadataProcessor
+from .ext_utils.cache_utils import get_cached_user_data
 from .mirror_leech_utils.gdrive_utils.list import GoogleDriveList
 from .mirror_leech_utils.rclone_utils.list import RcloneList
 from .mirror_leech_utils.status_utils.ffmpeg_status import FFmpegStatus
@@ -66,7 +67,7 @@ class TaskConfig:
         self.mid = self.message.id
         self.user = self.message.from_user or self.message.sender_chat
         self.user_id = self.user.id
-        self.user_dict = user_data.get(self.user_id, {})
+        self.user_dict = get_cached_user_data(self.user_id, user_data)
         self.metadata_processor = MetadataProcessor()
         for k in ("METADATA", "AUDIO_METADATA", "VIDEO_METADATA", "SUBTITLE_METADATA"):
             v = self.user_dict.get(k, {})
@@ -551,7 +552,7 @@ class TaskConfig:
                 self.tag, id_ = text[1].split("Tag: ")[1].split()
             self.user = self.message.from_user = await self.client.get_users(int(id_))
             self.user_id = self.user.id
-            self.user_dict = user_data.get(self.user_id, {})
+            self.user_dict = get_cached_user_data(self.user_id, user_data)
             with suppress(Exception):
                 await self.message.unpin()
         if self.user:

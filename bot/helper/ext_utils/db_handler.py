@@ -22,7 +22,14 @@ class DbManager:
             if self._conn is not None:
                 await self._conn.close()
             self._conn = AsyncIOMotorClient(
-                Config.DATABASE_URL, server_api=ServerApi("1")
+                Config.DATABASE_URL,
+                server_api=ServerApi("1"),
+                maxPoolSize=50,
+                minPoolSize=10,
+                maxIdleTimeMS=30000,
+                waitQueueTimeoutMS=10000,
+                retryWrites=True,
+                retryReads=True,
             )
             self.db = self._conn.wzmlx
             self._return = False
@@ -163,10 +170,14 @@ class DbManager:
     async def rss_update_all(self):
         if self._return:
             return
-        for user_id in list(rss_dict.keys()):
-            await self.db.rss[TgClient.ID].replace_one(
-                {"_id": user_id}, rss_dict[user_id], upsert=True
-            )
+        if not rss_dict:
+            return
+        from pymongo import ReplaceOne
+        operations = [
+            ReplaceOne({"_id": user_id}, rss_dict[user_id], upsert=True)
+            for user_id in rss_dict.keys()
+        ]
+        await self.db.rss[TgClient.ID].bulk_write(operations, ordered=False)
 
     async def rss_update(self, user_id):
         if self._return:
